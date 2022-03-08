@@ -48,11 +48,18 @@ class Login:
                 self.login_type = ''
                 self.success = 0
                 return 0
-        if data[0][2] == self.pwd:
-            self.name = data[0][1]
-            return 1
-        else:
-            print("Incorrect Password")
+        if self.login_type == 'c':
+            if data[0][2] == self.pwd:
+                self.name = data[0][1]
+                return 1
+            else:
+                print("Incorrect Password")
+        elif self.login_type == 'e':
+            if data[0][1] == self.pwd:
+                self.name = data[0][0]
+                return 1
+            else:
+                print("Incorrect Password")
         return 0
 
 
