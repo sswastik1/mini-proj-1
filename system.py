@@ -39,25 +39,44 @@ class Movie:
         self.end_time = None
         self.duration = 0
 
-    def search_movie(self,keywords):
-        '''SELECT m.title, m.year, m.runtime ,count(m.title)
-from movies m, moviePeople mp, casts c
-where m.mid = c.mid AND
-c.pid = mp.pid and
-m.title like '%the%' COLLATE NOCASE or
-mp.name like '%the%' COLLATE NOCASE or
-c.role like '%the%' COLLATE NOCASE
-GROUP by m.title
-ORDER BY count(m.title) DESC'''
+    def search_movie(self):
 
+        #         '''SELECT m.title, m.year, m.runtime ,count(m.title)
+        # from movies m, moviePeople mp, casts c
+        # where m.mid = c.mid AND
+        # c.pid = mp.pid and
+        # m.title like '%the%' COLLATE NOCASE or
+        # mp.name like '%the%' COLLATE NOCASE or
+        # c.role like '%the%' COLLATE NOCASE
+        # GROUP by m.title
+        # ORDER BY count(m.title) DESC'''
+        keywords = input("Enter the keywords to search for: ").split()
+
+        query = '''SELECT m.title, m.year, m.runtime ,count(m.title)
+                   from movies m, moviePeople mp, casts c
+                   where m.mid = c.mid AND
+                   c.pid = mp.pid and'''
+        for keyword in keywords:
+            query += '''m.title like '%''' + keyword + '''%' COLLATE NOCASE or'''
+            query += '''mp.name like '%''' + keyword + '''%' COLLATE NOCASE or'''
+            query += '''c.role like '%''' + keyword + '''%' COLLATE NOCASE'''
+        query += '''GROUP by m.title
+                    ORDER BY count(m.title) DESC
+                    LIMIT 5'''
+            
 
 class System:
     def __init__(self,log:Login):
         self.log = log
         self.session = None
+        self.movies = []
 
     def start_session(self):
         self.session = Session(self.log)
+
+    def search_movies(self):
+        pass
+
 
     def end_session(self):
         # TODO: end movies
