@@ -5,6 +5,7 @@ from login import Login
 
 
 class Session:
+    # Class to handle the session stuff
     def __init__(self,log):
         self.start_time = time.time()
         self.date = str(date.today())
@@ -13,26 +14,32 @@ class Session:
         self.log = log
         self.session_id = self.__generate()
         self.insert()
+        print("Session Started! ")
 
     def __generate(self):
+        # Method to get the session id
         data = self.log.cursor.execute("select sid from sessions ORDER BY sid ").fetchall()
         sess_id = data[len(data)-1][0]+1
         return sess_id
 
     def insert(self):
+        # Method to insert into the sessions table
         query = "insert into sessions values (:sid, :cid, :date, :dur);"
         self.log.cursor.execute(query,{'sid': self.session_id,'cid':self.log.id,'date':self.date,'dur':self.duration})
         self.log.conn.commit()
 
     def end_session(self):
+        # Method to end the session
         self.end_time = time.time()
         self.duration = (self.end_time - self.start_time)//60.0
         query = "UPDATE sessions set duration = :dur where sid = :sid"
         self.log.cursor.execute(query,{'dur':self.duration,'sid':self.session_id})
         self.log.conn.commit()
+        print("Session Ended! ")
 
 
 class Movie:
+    # Class to handle the movie stuff
     def __init__(self,log:Login,session:Session):
         self.log = log
         self.start_time = None
@@ -41,13 +48,16 @@ class Movie:
         self.session = session
 
     def end_movie(self):
+        # Method to end a movie
         self.end_time = time.time()
         self.time_watched = (self.end_time-self.start_time)//60
+        print("Movie Ended! ")
         query_watch = "UPDATE watch set duration =:dur where sid = :sid and cid = :cid and duration = 'NULL'"
         self.log.cursor.execute(query_watch,{'dur':self.time_watched,'sid':self.session.session_id,'cid':self.log.id})
         self.log.conn.commit()
 
     def display_movies(self,data):
+        # Method to display the movies
         if not data:
             print("No more choices. Try again! ")
             return 9
@@ -65,6 +75,7 @@ class Movie:
         return choice
 
     def search_movie(self):
+        # Method to search and display the movies
         keywords = input("Enter the keywords to search for: ").split()
 
         query = '''SELECT m.title, m.year, m.runtime ,count(m.title), m.mid
@@ -135,27 +146,32 @@ class Movie:
 
 
 class System:
+    # Class to handle the system
     def __init__(self,log:Login):
         self.log = log
         self.session = None
         self.movie = None
 
     def start_session(self):
+        # Method to start the session
         self.session = Session(self.log)
 
     def search_movies(self):
+        # Method to search movies
         if self.session is None:
             self.session = Session(self.log)
         self.movie = Movie(self.log,self.session)
         self.movie.search_movie()
 
     def end_movie(self):
+        # Method to end the movie
         if self.movie is not None:
             self.movie.end_movie()
         else:
             print("No movie is being played")
 
     def end_session(self):
+        # Method to end the session
         if self.session is not None:
             if self.movie is not None:
                 self.movie.end_movie()

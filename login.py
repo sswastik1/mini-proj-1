@@ -2,6 +2,7 @@ import sqlite3
 
 
 class Login:
+    # Class to handle the login and maintain login status
     def __init__(self,sid,pwd,database):
         self.id = sid
         self.pwd = pwd
@@ -15,6 +16,7 @@ class Login:
         self.name = ""
 
     def signup(self,name):
+        # Method to handle the signup
         query = "insert into customers values (:cid, :name, :pwd);"
         data = self.cursor.execute("select * from editors where eid = :cid",{'cid':self.id}).fetchall()
         if not data:
@@ -35,6 +37,7 @@ class Login:
             return 0
 
     def login(self):
+        # Method to handle the login and set login status
         query_customer = "SELECT * FROM customers where cid= :cid"
         query_editor = "SELECT * FROM editors where eid = :cid"
         data = self.cursor.execute(query_customer,{'cid':self.id}).fetchall()

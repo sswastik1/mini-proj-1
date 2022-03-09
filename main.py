@@ -51,6 +51,7 @@ def login_screen():
 
     if log.login_type == "c":
         choice = 0
+        system_screen = System(log)
         while choice != 5:
             print("Please select from the following:")
             print("1. Start a session.")
@@ -59,7 +60,6 @@ def login_screen():
             print("4. End the session")
             print("5. Logout")
             choice = int(input("Choice : "))
-            system_screen = System(log)
             if choice == 1:
                 system_screen.start_session()
             elif choice == 2:
