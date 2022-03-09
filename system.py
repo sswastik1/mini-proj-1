@@ -57,13 +57,14 @@ class Movie:
                    where m.mid = c.mid AND
                    c.pid = mp.pid and'''
         for keyword in keywords:
-            query += '''m.title like '%''' + keyword + '''%' COLLATE NOCASE or'''
-            query += '''mp.name like '%''' + keyword + '''%' COLLATE NOCASE or'''
-            query += '''c.role like '%''' + keyword + '''%' COLLATE NOCASE'''
-        query += '''GROUP by m.title
+            query += ''' m.title like '%''' + keyword + '''%' COLLATE NOCASE or'''
+            query += ''' mp.name like '%''' + keyword + '''%' COLLATE NOCASE or'''
+            query += ''' c.role like '%''' + keyword + '''%' COLLATE NOCASE'''
+        query += ''' GROUP by m.title
                     ORDER BY count(m.title) DESC
                     LIMIT 5'''
-            
+
+        print(self.log.cursor.execute(query).fetchall())
 
 class System:
     def __init__(self,log:Login):
@@ -77,7 +78,6 @@ class System:
     def search_movies(self):
         pass
 
-
     def end_session(self):
         # TODO: end movies
         self.session.end_session()
@@ -88,5 +88,6 @@ if __name__ == '__main__':
     l1.login()
     s1 = System(l1)
     s1.start_session()
-    time.sleep(120)
+    m = Movie(l1)
+    m.search_movie()
     s1.end_session()

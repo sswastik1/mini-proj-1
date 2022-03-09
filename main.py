@@ -1,5 +1,6 @@
 from getpass import getpass
 from login import Login
+import sys
 database_path = "./mini-proj.db"
 
 
@@ -47,4 +48,19 @@ def login_screen():
     print("Welcome, " + log.name)
 
 
-login_screen()
+def invalid():
+    print("Invalid Arguments in cli!\n Try again by running in the format \'python3 main.py database-name.db\'")
+
+
+def main():
+    if len(sys.argv) != 2:
+        invalid()
+        return
+    else:
+        if '.db' not in sys.argv[1]:
+            invalid()
+            return
+        else:
+            login_screen()
+
+main()
