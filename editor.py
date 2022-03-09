@@ -1,4 +1,10 @@
+import os
+import sys
+from datetime import datetime
 from random import randint
+from collections import Counter
+from database import DB
+from login import login
 
 sid = randint()
 sid_array = []
@@ -52,6 +58,43 @@ class Editor:
 
 
 
+
+	def Update()
+	print('''Please select a term from the following:
+		  1.) Monthly
+		  2.) Annual
+		  3.) All-time Report''')
+	term = input()
+	if lower(term) == monthly:
+		till = "-30 days"
+	if else lower(term) == "monthly":
+		till = "-365 days"
+	
+	db.c.execute('''
+				SELECT (*)
+				FROM movies m, sessions s, customers cm 
+				WHERE date(s.sdate) >= date('now', till)
+
+				INTERSECT
+
+				SELECT m1.mid, m2.mid, COUNT(customers)
+				FROM movies m1, movies m2, customers cm, watch w
+				WHERE cm.cid = w.cid and w.mid = m1.mid 
+					and w.mid = m2.mid and m1.mid != m2.mid  
+				ORDER BY DESC	
+				''')
+	final = db.c.fetchall()
+	
+	db.c.execute('''
+				SELECT recommended
+				FROM recommendations
+				''')
+	reccomended = db.c.fetchall()
+	indicator = NO		
+	for j in (0, range(final)):
+		for i in (0,range(reccomended)):
+			if final[j] in reccomended[i] and final[j] in reccomended[i]:
+				indicator = YES
 
 
 
