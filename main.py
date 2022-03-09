@@ -44,10 +44,7 @@ def login_screen():
 
     # Try to login or register the user if the user can't login
     log = login()
-
-
-    print("Welcome, "+ log.name)
-
+    print("Welcome, " + log.name)
 
 
 login_screen()

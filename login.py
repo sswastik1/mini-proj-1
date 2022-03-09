@@ -5,6 +5,7 @@ class Login:
     def __init__(self,sid,pwd,database):
         self.id = sid
         self.pwd = pwd
+        self.database = database
         self.conn = sqlite3.connect(database)
         self.cursor = self.conn.cursor()
         self.cursor.execute(' PRAGMA foreign_keys=ON; ')
