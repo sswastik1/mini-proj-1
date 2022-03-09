@@ -32,6 +32,23 @@ class Session:
         self.log.conn.commit()
 
 
+class Movie:
+    def __init__(self,log:Login):
+        self.log = log
+        self.start_time = None
+        self.end_time = None
+        self.duration = 0
+
+    def search_movie(self,keywords):
+        '''SELECT m.title, m.year, m.runtime ,count(m.title)
+from movies m, moviePeople mp, casts c
+where m.mid = c.mid AND
+c.pid = mp.pid and
+m.title like '%the%' COLLATE NOCASE or
+mp.name like '%the%' COLLATE NOCASE or
+c.role like '%the%' COLLATE NOCASE
+GROUP by m.title
+ORDER BY count(m.title) DESC'''
 
 
 class System:
@@ -43,8 +60,9 @@ class System:
         self.session = Session(self.log)
 
     def end_session(self):
-        # TODO: end movies and add to session duration
+        # TODO: end movies
         self.session.end_session()
+
 
 if __name__ == '__main__':
     l1 = Login("c100","cmput291","./mini-proj.db")
