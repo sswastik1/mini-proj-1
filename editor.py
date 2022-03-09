@@ -85,20 +85,16 @@ def Update(database):
 	term = input()
 	if term.lower() == "1":
 		till = "-30 days"
-	elif term.lower() == "2":
+	else:
 		till = "-365 days"
 	
 	c.execute('''
 				SELECT m1.mid, m2.mid, count(distinct w1.cid)
 				FROM movies m1, movies m2, watch w1, watch w2, sessions s
 				WHERE s.sdate > datetime('now', :till)
-  					and m1.mid = w1.mid
-  					and w1.duration * 2 >= m1.runtime
-  					and m2.mid = w2.mid
-  					and w2.duration * 2 >= m1.runtime
+  					and m1.mid = w1.mid and w1.duration * 2 >= m1.runtime and m2.mid = w2.mid and w2.duration * 2 >= m1.runtime
   					and ((w1.sid = s.sid and w1.cid = s.cid) or (w2.sid = s.sid and w2.cid = s.cid))
-  					and w1.cid = w2.cid
-  					and m1.mid != m2.mid
+  					and w1.cid = w2.cid and m1.mid != m2.mid
 				GROUP BY m1.mid, m2.mid
 				ORDER BY count(distinct w1.cid) DESC	
 				''',{'till':till})
@@ -109,11 +105,8 @@ def Update(database):
 				FROM recommendations 
 				''')
 	reccomended = c.fetchall()
-	print(reccomended)
-	for item in final:
-		print(item)
-	print(len(final))
 
+	
 	score_table = []
 	indicator_LIST = []
 
@@ -121,59 +114,75 @@ def Update(database):
 	for i in range(len(final)):
 		if final[i][0:2] in reccomended:
 			indicator_LIST.append("YES")
-			print(final[i][0:2])
 			f_score = getScore(final[i][0:2])
-			score_table.append(f_score)
+			score_table.append(f_score[0][0])	
 		else:
 			indicator_LIST.append("NO")
-			score_table.append(0)
+			score_table.append("-")
 
-	for i in range(0, len(final)):
-		print(str(i+1) + "\t|\t " + str(final[i][0]) + "\t|\t" + str(final[i][1]) + "\t|\t" + str(indicator_LIST[i]) + "\t|\t" + str(score_table[i]))
-
-	c.execute('''SELECT *
-				FROM recommendations
-			''')
-	oooo = c.fetchall()
-	for i in oooo:
-		print(i)
-	#getting the input for the movies editor wants
-	pair_num = int(input("Please select a pair from the table.   "))
-
-
-	if indicator_LIST[pair_num-1] == "YES":
-		print('''Select one from the following:
-					1.) Delete
-					2.) Update Score
-					3.) Exit''')
-	elif indicator_LIST[pair_num+1] == "NO":
-		print('''Select one from the following:
-					1.) Add
-					3.) Exit''')
-
-	option = int(input())
-	if option == 3:
+	if len(final) == 0:
+		print("NO REPORT AVAILABLE")
 		return
-	elif indicator_LIST[pair_num-1] == "YES" and option == 1:
-		Delete_R(final[pair_num-1][0:2])
-	elif indicator_LIST[pair_num-1] == "YES" and option == 2:
-		Update_R(final[pair_num-1][0:2])
-	elif indicator_LIST[pair_num-1] == "NO" and option == 1:
-		Add_R(final[pair_num-1][0:2], new_score)
+	else:	
+		print("-----------------------------------------------------------------------------")
+		print("  S No. " + "|" + "    Watched    " + "|" + "   Reccomended " + "|" + "    Indicator " + " | " + "  Score")	
+		print("-----------------------------------------------------------------------------")
+		for i in range(0, len(final)):
+			print(str(i+1) + "\t|\t " + str(final[i][0]) + "\t|\t" + str(final[i][1]) + "\t|\t" + str(indicator_LIST[i]) + "\t|\t" + str(score_table[i]))	
+	
+	#getting the input for the movies editor wants
+	while True:
+		pair_num = int(input("Please select a pair from the table.   "))
 
+
+		if indicator_LIST[pair_num-1] == "YES":
+			print('''Select one from the following:
+						1.) Delete
+						2.) Update Score
+						3.) Go Back
+						4.) Exit''')
+		elif indicator_LIST[pair_num-1] == "NO":
+			print('''Select one from the following:
+						1.) Add
+						2.) Go Back
+						3.) Exit''')
+
+		option = int(input())	
+		if (option == 3 and indicator_LIST[pair_num-1] == "YES") or (indicator_LIST[pair_num-1] == "NO" and option == 2):
+			continue
+		elif (option == 4 and indicator_LIST[pair_num-1] == "YES") or (indicator_LIST[pair_num-1] == "NO" and option == 3):
+			return	
+		elif indicator_LIST[pair_num-1] == "YES" and option == 1:
+			Delete_R(final[pair_num-1][0:2])
+			print("Successfully Delected")
+			return
+		elif indicator_LIST[pair_num-1] == "YES" and option == 2:
+			Update_R(final[pair_num-1][0:2])
+			print("Successfully Updated")
+			return
+		elif indicator_LIST[pair_num-1] == "NO" and option == 1:
+			Add_R(final[pair_num-1][0], final[pair_num-1][1])
+			print("New reccomended added to recommendation")
+			return
+	
 	connection.commit()
 
 
 
 def Delete_R(recomend):
-	global connection,c
+	global connection,c	
 	c.execute('''DELETE from recommendations 
-				WHERE recommended = :recomend or recommended = :rec2''',{'new_score':new_score, 'recomend':recomend[0],'rec2':recomend[1]})
+				WHERE watched = :rec1 or recommended = :rec2''',{'rec1':recomend[0],'rec2':recomend[1]})
+	connection.commit()
 
-def Add_R(watched,recomend, score):
+
+def Add_R(watched,recomend):
 	global connection,c
-	recommendation_to_add = [watched, recomend, score]
+	new_score = input("What score do you want to assign?   ")
+	recommendation_to_add = [watched, recomend, new_score]
 	c.execute("INSERT INTO recommendations VALUES (?,?,?)", recommendation_to_add)
+	connection.commit()
+
 
 
 def Update_R(recomend):
@@ -181,17 +190,19 @@ def Update_R(recomend):
 	new_score = input("What score do you want to update with ? 	 ")
 	c.execute('''UPDATE recommendations 
 				SET score = :new_score
-				WHERE recommended = :recomend or recommended = :rec2''',{'new_score':new_score, 'recomend':recomend[0],'rec2':recomend[1]})
+				WHERE watched = :rec1 and recommended = :rec2''',{'new_score':new_score, 'rec1':recomend[0],'rec2':recomend[1]})
+
+	connection.commit()
 
 
 def getScore(got):
 	global connection,c
 
-	c.execute('''SELECT score
+	c.execute('''SELECT score	
 				FROM recommendations
-				WHERE recommended = :recommended1 or recommended = :rec2''', {'recommended1':got[0],'rec2':got[1]})
+				WHERE recommended = :rec2 and watched = :rec1''', {'rec2':got[1], 'rec1':got[0]})
+
 	f_score = c.fetchall()
-	print(f_score)
 	return f_score
 
 
@@ -202,8 +213,10 @@ def getScore(got):
 					FROM casts c, moviePeople mp
 					WHERE c.pid=:pid COLLATE NOCASE and c.pid = mp.pid 
 					''',{'pid':c_pid})
-
+ 
 	connection.commit()
 
-# Update("mini-proj.db")
+if __name__=="__main__":
+	Update("mini-proj.db")
+
 
