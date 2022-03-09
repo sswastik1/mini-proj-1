@@ -49,10 +49,11 @@ def login_screen():
 
 
 def invalid():
-    print("Invalid Arguments in cli!\n Try again by running in the format \'python3 main.py database-name.db\'")
+    print("Invalid Arguments in cli!\nTry again by running in the format \'python3 main.py database-name.db\'")
 
 
 def main():
+    global database_path
     if len(sys.argv) != 2:
         invalid()
         return
@@ -61,6 +62,7 @@ def main():
             invalid()
             return
         else:
+            database_path = "./" + sys.argv[1]
             login_screen()
 
 main()
