@@ -15,7 +15,6 @@ def welcome():
 def login():
     userid = input("Enter ID: ")
     pwd = getpass("Enter password: ")
-
     # Try logging in
     log = Login(userid, pwd, database_path)
     success = log.login()
