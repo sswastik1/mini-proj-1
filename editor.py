@@ -113,7 +113,7 @@ def Update(database):
 	for item in final:
 		print(item)
 	print(len(final))
-	
+
 	score_table = []
 	indicator_LIST = []
 
@@ -123,7 +123,7 @@ def Update(database):
 			indicator_LIST.append("YES")
 			print(final[i][0:2])
 			f_score = getScore(final[i][0:2])
-			score_table.append(f_score)	
+			score_table.append(f_score)
 		else:
 			indicator_LIST.append("NO")
 			score_table.append(0)
@@ -133,7 +133,7 @@ def Update(database):
 
 	c.execute('''SELECT *
 				FROM recommendations
-			''')	
+			''')
 	oooo = c.fetchall()
 	for i in oooo:
 		print(i)
@@ -151,7 +151,7 @@ def Update(database):
 					1.) Add
 					3.) Exit''')
 
-	option = int(input())	
+	option = int(input())
 	if option == 3:
 		return
 	elif indicator_LIST[pair_num-1] == "YES" and option == 1:
@@ -160,13 +160,13 @@ def Update(database):
 		Update_R(final[pair_num-1][0:2])
 	elif indicator_LIST[pair_num-1] == "NO" and option == 1:
 		Add_R(final[pair_num-1][0:2], new_score)
-	
+
 	connection.commit()
 
 
 
 def Delete_R(recomend):
-	global connection,c	
+	global connection,c
 	c.execute('''DELETE from recommendations 
 				WHERE recommended = :recomend or recommended = :rec2''',{'new_score':new_score, 'recomend':recomend[0],'rec2':recomend[1]})
 
@@ -202,9 +202,8 @@ def getScore(got):
 					FROM casts c, moviePeople mp
 					WHERE c.pid=:pid COLLATE NOCASE and c.pid = mp.pid 
 					''',{'pid':c_pid})
- 
+
 	connection.commit()
 
-Update("mini-proj.db")
-
+# Update("mini-proj.db")
 

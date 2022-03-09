@@ -1,7 +1,9 @@
 from getpass import getpass
 from login import Login
+from system import System
+from editor import Update,AddMovie
 import sys
-database_path = "./mini-proj.db"
+database_path = ""
 
 
 def welcome():
@@ -47,6 +49,45 @@ def login_screen():
     log = login()
     print("Welcome, " + log.name)
 
+    if log.login_type == "c":
+        choice = 0
+        while choice != 5:
+            print("Please select from the following:")
+            print("1. Start a session.")
+            print("2. Search for movies.")
+            print("3. End watching a movie.")
+            print("4. End the session")
+            print("5. Logout")
+            choice = int(input("Choice : "))
+            system_screen = System(log)
+            if choice == 1:
+                system_screen.start_session()
+            elif choice == 2:
+                system_screen.search_movies()
+            elif choice == 3:
+                system_screen.end_movie()
+            elif choice == 4:
+                system_screen.end_session()
+            elif choice == 5:
+                return
+    elif log.login_type == 'e':
+        choice = 0
+        while choice != 3:
+            print("Please select from the following: ")
+            print("1. Add a Movie")
+            print("2. Update a recommendation")
+            print("3. Logout")
+            choice = int(input("Choice : "))
+            if choice == 1:
+                AddMovie(database_path)
+            elif choice == 2:
+                Update(database_path)
+            elif choice == 3:
+                return
+
+
+
+
 
 def invalid():
     print("Invalid Arguments in cli!\nTry again by running in the format \'python3 main.py database-name.db\'")
@@ -63,6 +104,7 @@ def main():
             return
         else:
             database_path = "./" + sys.argv[1]
-            login_screen()
+            while True:
+                login_screen()
 
 main()

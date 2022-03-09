@@ -150,11 +150,18 @@ class System:
         self.movie.search_movie()
 
     def end_movie(self):
-        self.movie.end_movie()
+        if self.movie is not None:
+            self.movie.end_movie()
+        else:
+            print("No movie is being played")
 
     def end_session(self):
-        self.movie.end_movie()
-        self.session.end_session()
+        if self.session is not None:
+            if self.movie is not None:
+                self.movie.end_movie()
+            self.session.end_session()
+        else:
+            print("No session to end.")
 
 
 if __name__ == '__main__':
