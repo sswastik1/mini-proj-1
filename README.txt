@@ -1,8 +1,8 @@
 Members =
 
-Hridyansh Dugar - dugar
-Rana Sunjog Singh Thind - ranasunj
-Swastik Sharma - swastik
+
+Rana Sunjog Singh Thind 
+Swastik Sharma 
 
 Collaborators = None, "have not collaborated with anyone else."
 
